@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 
 // Load environment variables from .env file
@@ -10,14 +11,19 @@ connectDB();
 
 // Route files
 const comics = require('./routes/comics');
+const auth = require('./routes/auth');
 
 const app = express();
 
 // Body parser
 app.use(express.json());
 
+// Cookie parser
+app.use(cookieParser());
+
 // Mount routers
 app.use('/api/v1/comics', comics);
+app.use('/api/v1/auth', auth);
 
 const PORT = process.env.PORT || 5000;
 

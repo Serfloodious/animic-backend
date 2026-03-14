@@ -1,14 +1,16 @@
 const express = require('express');
 const {getComics, getComic, createComic, updateComic, deleteComic} = require('../controllers/comics');
 
-const router = express.Router();
+const router = express.Router({mergeParams: true});
+
+const {protect} = require('../middleware/auth');
 
 router.route('/')
-    .get(getComics)
-    .post(createComic);
+    .get(protect, getComics)
+    .post(protect, createComic);
 router.route('/:id')
-    .get(getComic)
-    .put(updateComic)
-    .delete(deleteComic);
+    .get(protect, getComic)
+    .put(protect, updateComic)
+    .delete(protect, deleteComic);
 
 module.exports = router;
