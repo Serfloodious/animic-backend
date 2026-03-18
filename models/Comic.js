@@ -30,6 +30,10 @@ const ComicSchema = new mongoose.Schema({
         default: 0,
         min: [0, 'Chapter must not be negative number'],
     },
+    resumeDate: { // วันที่จะกลับมาอ่าน (สำหรับสถานะ Stalled)
+        type: Date,
+        default: null // null แปลว่ายังไม่มีกำหนดการ
+    },
     rating: {
         type: Number,
         min: 1,
