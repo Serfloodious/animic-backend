@@ -9,7 +9,7 @@ const ComicSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['Completed', 'Reading', 'Stalled', 'Dropped', 'Want to Read'],
-        required: [true, 'Please add a status'],
+        required: [true, 'Please add a status']
     },
     releaseDays: {
         type: [String], 
@@ -23,12 +23,12 @@ const ComicSchema = new mongoose.Schema({
     volume: {
         type: Number,
         default: 0,
-        min: [0, 'Volume must not be negative number'],
+        min: [0, 'Volume must not be negative number']
     },
     chapter: {
         type: Number,
         default: 0,
-        min: [0, 'Chapter must not be negative number'],
+        min: [0, 'Chapter must not be negative number']
     },
     resumeDate: { // วันที่จะกลับมาอ่าน (สำหรับสถานะ Stalled)
         type: Date,
@@ -36,7 +36,7 @@ const ComicSchema = new mongoose.Schema({
     },
     rating: {
         type: Number,
-        min: 1,
+        min: 0,
         max: 10
     },
     note: {

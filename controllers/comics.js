@@ -133,7 +133,7 @@ exports.addComic = async (req, res, next) => {
     }
 }
 
-//@desc     Update comic
+//@desc     Update one comic
 //@route    PUT /api/v1/comics/:id
 //@access   Private
 exports.updateComic = async (req, res, next) => {
@@ -147,7 +147,7 @@ exports.updateComic = async (req, res, next) => {
             });
         }
 
-        if (req.body.status === 'Reading') {
+        if ((req.body.status === 'Reading' || req.body.status === 'Completed') && comic.resumeDate) {
             req.body.resumeDate = null;
         }
 
@@ -177,7 +177,7 @@ exports.updateComic = async (req, res, next) => {
     }
 }
 
-//@desc     Delete comic
+//@desc     Delete one comic
 //@route    DELETE /api/v1/comics/:id
 //@access   Private
 exports.deleteComic = async (req, res, next) => {
