@@ -10,6 +10,7 @@ dotenv.config({path: './config/config.env'});
 connectDB();
 
 // Route files
+const animes = require('./routes/animes');
 const comics = require('./routes/comics');
 const auth = require('./routes/auth');
 
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Mount routers
+app.use('/api/v1/animes', animes);
 app.use('/api/v1/comics', comics);
 app.use('/api/v1/auth', auth);
 
