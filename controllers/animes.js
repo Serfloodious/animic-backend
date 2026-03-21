@@ -1,8 +1,8 @@
 const Anime = require('../models/Anime');
 
-//@desc     Get all animes
-//@route    GET /api/v1/animes
-//@access   Public
+// @desc     Get all animes
+// @route    GET /api/v1/animes
+// @access   Public
 exports.getAnimes = async (req, res, next) => {
     try {
         let query;
@@ -84,9 +84,9 @@ exports.getAnimes = async (req, res, next) => {
     }
 }
 
-//@desc     Get one anime
-//@route    GET /api/v1/animes/:id
-//@access   Public
+// @desc     Get one anime
+// @route    GET /api/v1/animes/:id
+// @access   Public
 exports.getAnime = async (req, res, next) => {
     try {
         const anime = await Anime.findById(req.params.id);
@@ -111,9 +111,9 @@ exports.getAnime = async (req, res, next) => {
     }
 }
 
-//@desc     Add one anime
-//@route    POST /api/v1/animes
-//@access   Private
+// @desc     Add one anime
+// @route    POST /api/v1/animes
+// @access   Private
 exports.addAnime = async (req, res, next) => {
     try {
         // add user Id to req.body
@@ -134,9 +134,9 @@ exports.addAnime = async (req, res, next) => {
     }
 }
 
-//@desc     Update one anime
-//@route    PUT /api/v1/animes/:id
-//@access   Private
+// @desc     Update one anime
+// @route    PUT /api/v1/animes/:id
+// @access   Private
 exports.updateAnime = async (req, res, next) => {
     try {
         let anime = await Anime.findById(req.params.id);
@@ -178,9 +178,9 @@ exports.updateAnime = async (req, res, next) => {
     }
 }
 
-//@desc     Delete one anime
-//@route    DELETE /api/v1/animes/:id
-//@access   Private
+// @desc     Delete one anime
+// @route    DELETE /api/v1/animes/:id
+// @access   Private
 exports.deleteAnime = async (req, res, next) => {
     try {
         const anime = await Anime.findById(req.params.id);

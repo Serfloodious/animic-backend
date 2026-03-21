@@ -1,8 +1,8 @@
 const Comic = require('../models/Comic');
 
-//@desc     Get all comics
-//@route    GET /api/v1/comics
-//@access   Public
+// @desc     Get all comics
+// @route    GET /api/v1/comics
+// @access   Public
 exports.getComics = async (req, res, next) => {
     try {
         let query;
@@ -83,9 +83,9 @@ exports.getComics = async (req, res, next) => {
     }
 }
 
-//@desc     Get one comic
-//@route    GET /api/v1/comics/:id
-//@access   Public
+// @desc     Get one comic
+// @route    GET /api/v1/comics/:id
+// @access   Public
 exports.getComic = async (req, res, next) => {
     try {
         const comic = await Comic.findById(req.params.id);
@@ -110,9 +110,9 @@ exports.getComic = async (req, res, next) => {
     }
 }
 
-//@desc     Add one comic
-//@route    POST /api/v1/comics
-//@access   Private
+// @desc     Add one comic
+// @route    POST /api/v1/comics
+// @access   Private
 exports.addComic = async (req, res, next) => {
     try {
         // add user Id to req.body
@@ -133,9 +133,9 @@ exports.addComic = async (req, res, next) => {
     }
 }
 
-//@desc     Update one comic
-//@route    PUT /api/v1/comics/:id
-//@access   Private
+// @desc     Update one comic
+// @route    PUT /api/v1/comics/:id
+// @access   Private
 exports.updateComic = async (req, res, next) => {
     try {
         let comic = await Comic.findById(req.params.id);
@@ -177,9 +177,9 @@ exports.updateComic = async (req, res, next) => {
     }
 }
 
-//@desc     Delete one comic
-//@route    DELETE /api/v1/comics/:id
-//@access   Private
+// @desc     Delete one comic
+// @route    DELETE /api/v1/comics/:id
+// @access   Private
 exports.deleteComic = async (req, res, next) => {
     try {
         const comic = await Comic.findById(req.params.id);
