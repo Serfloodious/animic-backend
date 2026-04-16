@@ -4,6 +4,7 @@ const ComicSchema = new mongoose.Schema({
     title: {
         type: String,
         required: [true, 'Please add a title'],
+        unique: true,
         trim: true
     },
     status: {
@@ -42,6 +43,18 @@ const ComicSchema = new mongoose.Schema({
     note: {
         type: String,
         trim: true
+    },
+    isRead: {
+        type: Boolean,
+        default: false
+    },
+    color: {
+        type: String,
+        default: '#ef4444' // ค่าเริ่มต้นเป็นสีแดง
+    },
+    dayOrder: {
+        type: Number,
+        default: 99 // 99 คือค่าเริ่มต้นสำหรับเรื่องที่ไม่มีวันอัปเดต จะได้ไปอยู่ท้ายสุด
     },
     user: {
         type: mongoose.Schema.ObjectId,

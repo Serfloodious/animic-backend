@@ -5,6 +5,7 @@ const AnimeSchema = new mongoose.Schema({
     title: {
         type: String,
         required: [true, 'Please add a title'],
+        unique: true,
         trim: true
     },
     status: {
@@ -38,6 +39,18 @@ const AnimeSchema = new mongoose.Schema({
     note: {
         type: String,
         trim: true
+    },
+    isWatched: {
+        type: Boolean,
+        default: false
+    },
+    color: {
+        type: String,
+        default: '#ef4444' // ค่าเริ่มต้นเป็นสีแดง
+    },
+    dayOrder: { 
+        type: Number, 
+        default: 99 
     },
     user: {
         type: mongoose.Schema.ObjectId,
