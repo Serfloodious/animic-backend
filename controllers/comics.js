@@ -1,5 +1,24 @@
 const Comic = require('../models/Comic');
 
+const calculateDayOrder = (daysArray) => {
+    if (!daysArray || daysArray.length === 0) return 99; // ไม่มีวัน
+    
+    const dayMap = { 
+        'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 
+        'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': 7 
+    };
+    
+    let minOrder = 99;
+    daysArray.forEach(day => {
+        if (dayMap[day]) {
+            minOrder = Math.min(minOrder, dayMap[day]); // เอาวันที่น้อยที่สุด
+        } else {
+            minOrder = Math.min(minOrder, 8); // ถ้าเป็นคำอื่นๆ (Others) ให้ค่าเป็น 8
+        }
+    });
+    return minOrder;
+};
+
 // @desc     Get all comics
 // @route    GET /api/v1/comics
 // @access   Public
@@ -9,6 +28,14 @@ exports.getComics = async (req, res, next) => {
 
         // Copy req.query
         const reqQuery = {...req.query};
+
+        // จัดการ Filter "Others"
+        if (reqQuery.releaseDays === 'Others') {
+            const standardDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            // สั่งให้ Mongo หา Array ที่ "มีอย่างน้อย 1 ค่าที่ไม่ใช่วันมาตรฐาน"
+            reqQuery.releaseDays = { $elemMatch: { $nin: standardDays } };
+        }
 
         // Fields to exclude
         const removeFields = ['select', 'sort', 'page', 'limit'];
@@ -118,6 +145,8 @@ exports.addComic = async (req, res, next) => {
         // add user Id to req.body
         req.body.user = req.user.id;
 
+        req.body.dayOrder = calculateDayOrder(req.body.releaseDays);
+
         const comic = await Comic.create(req.body);
 
         res.status(201).json({
@@ -125,6 +154,13 @@ exports.addComic = async (req, res, next) => {
             data: comic
         });
     } catch (err) {
+        if (err.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'This Title already exists'
+            });
+        }
+
         console.log(err);
         res.status(500).json({
             success: false,
@@ -146,6 +182,8 @@ exports.updateComic = async (req, res, next) => {
                 message: `No comic with the id of ${req.params.id}`
             });
         }
+
+        req.body.dayOrder = calculateDayOrder(req.body.releaseDays);
 
         if ((req.body.status === 'Reading' || req.body.status === 'Completed') && comic.resumeDate) {
             req.body.resumeDate = null;
@@ -169,6 +207,13 @@ exports.updateComic = async (req, res, next) => {
             data: comic
         });
     } catch (err) {
+        if (err.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'This Title already exists'
+            });
+        }
+
         console.log(err);
         res.status(500).json({
             success: false,
