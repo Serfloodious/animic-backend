@@ -38,7 +38,7 @@ exports.getAnimes = async (req, res, next) => {
         }
 
         // Fields to exclude
-        const removeFields = ['select', 'sort', 'page', 'limit'];
+        const removeFields = ['select', 'sort', 'page', 'limit', 'title', 'platform'];
 
         // Loop over removeFields and delete them from reqQuery
         removeFields.forEach(param => delete reqQuery[param]);
@@ -50,8 +50,19 @@ exports.getAnimes = async (req, res, next) => {
         // Create operators ($gt, $gte, etc)
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
+        let finalQueryObject = JSON.parse(queryStr);
+
+        // Handle title and platform search
+        if (req.query.title) {
+            finalQueryObject.title = { $regex: req.query.title, $options: 'i' };
+        }
+
+        if (req.query.platform) {
+            finalQueryObject.platform = { $regex: req.query.platform, $options: 'i' };
+        }
+
         // Finding resource
-        query = Anime.find(JSON.parse(queryStr))
+        query = Anime.find(finalQueryObject);
 
         // Select Fields
         if (req.query.select) {
@@ -72,7 +83,7 @@ exports.getAnimes = async (req, res, next) => {
         const limit = parseInt(req.query.limit, 10) || 25;
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-        const total = await Anime.countDocuments();
+        const total = await Anime.countDocuments(finalQueryObject);
 
         query = query.skip(startIndex).limit(limit);
 

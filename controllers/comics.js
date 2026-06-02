@@ -38,7 +38,7 @@ exports.getComics = async (req, res, next) => {
         }
 
         // Fields to exclude
-        const removeFields = ['select', 'sort', 'page', 'limit'];
+        const removeFields = ['select', 'sort', 'page', 'limit', 'title', 'platform'];
 
         // Loop over removeFields and delete them from reqQuery
         removeFields.forEach(param => delete reqQuery[param]);
@@ -50,8 +50,19 @@ exports.getComics = async (req, res, next) => {
         // Create operators ($gt, $gte, etc)
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
+        let finalQueryObject = JSON.parse(queryStr);
+
+        // Handle title and platform search
+        if (req.query.title) {
+            finalQueryObject.title = { $regex: req.query.title, $options: 'i' };
+        }
+
+        if (req.query.platform) {
+            finalQueryObject.platform = { $regex: req.query.platform, $options: 'i' };
+        }
+
         // Finding resource
-        query = Comic.find(JSON.parse(queryStr))
+        query = Comic.find(finalQueryObject);
 
         // Select Fields
         if (req.query.select) {
@@ -71,7 +82,7 @@ exports.getComics = async (req, res, next) => {
         const limit = parseInt(req.query.limit, 10) || 25;
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-        const total = await Comic.countDocuments();
+        const total = await Comic.countDocuments(finalQueryObject);
 
         query = query.skip(startIndex).limit(limit);
 
