@@ -38,7 +38,7 @@ exports.getAnimes = async (req, res, next) => {
         }
 
         // Fields to exclude
-        const removeFields = ['select', 'sort', 'page', 'limit', 'title', 'platform'];
+        const removeFields = ['select', 'sort', 'page', 'limit', 'title', 'platform', 'status'];
 
         // Loop over removeFields and delete them from reqQuery
         removeFields.forEach(param => delete reqQuery[param]);
@@ -53,12 +53,17 @@ exports.getAnimes = async (req, res, next) => {
         let finalQueryObject = JSON.parse(queryStr);
 
         // Handle title and platform search
-        if (req.query.title) {
+        if (req.query.title && req.query.title.trim() !== '') {
             finalQueryObject.title = { $regex: req.query.title, $options: 'i' };
         }
 
-        if (req.query.platform) {
+        if (req.query.platform && req.query.platform.trim() !== '') {
             finalQueryObject.platform = { $regex: req.query.platform, $options: 'i' };
+        }
+
+        if (req.query.status && req.query.status.trim() !== '') {
+            const statusArray = req.query.status.split(',');
+            finalQueryObject.status = { $in: statusArray };
         }
 
         // Finding resource
