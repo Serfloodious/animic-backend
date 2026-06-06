@@ -49,8 +49,23 @@ app.use(limiter);
 // Prevent http param pollution
 app.use(hpp());
 
+const allowedOrigins = [
+  'https://animic-frontend.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 // Cookie parser
 app.use(cookieParser());
