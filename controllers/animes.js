@@ -29,12 +29,17 @@ exports.getAnimes = async (req, res, next) => {
         // Copy req.query
         const reqQuery = {...req.query};
 
+        let isNoneFilter = false;
+
         // จัดการ Filter "Others"
         if (reqQuery.releaseDays === 'Others') {
             const standardDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             
             // สั่งให้ Mongo หา Array ที่ "มีอย่างน้อย 1 ค่าที่ไม่ใช่วันมาตรฐาน"
             reqQuery.releaseDays = { $elemMatch: { $nin: standardDays } };
+        } else if (reqQuery.releaseDays === 'None') {
+            delete reqQuery.releaseDays;
+            isNoneFilter = true;
         }
 
         // Fields to exclude
@@ -51,6 +56,14 @@ exports.getAnimes = async (req, res, next) => {
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
         let finalQueryObject = JSON.parse(queryStr);
+
+        if (isNoneFilter) {
+            finalQueryObject.$or = [
+                { releaseDays: { $exists: false } },
+                { releaseDays: { $size: 0 } },
+                { releaseDays: null }
+            ];
+        }
 
         // Handle title and platform search
         if (req.query.title && req.query.title.trim() !== '') {
