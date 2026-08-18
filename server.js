@@ -50,7 +50,7 @@ app.use(limiter);
 app.use(hpp());
 
 const allowedOrigins = [
-  'https://animic-frontend.vercel.app',
+  'https://animic.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000'
 ];
