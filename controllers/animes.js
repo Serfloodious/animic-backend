@@ -75,8 +75,38 @@ exports.getAnimes = async (req, res, next) => {
         }
 
         if (req.query.status && req.query.status.trim() !== '') {
-            const statusArray = req.query.status.split(',');
-            finalQueryObject.status = { $in: statusArray };
+            const rawStatusArray = req.query.status.split(',');
+    
+            const statusConditions = [];
+            const normalStatuses = [];
+
+            rawStatusArray.forEach(status => {
+                if (status === 'Watching_UpToDate') {
+                    statusConditions.push({ 
+                        status: 'Watching', 
+                        isRead: true // หรือ isUpToDate: true ตามชื่อฟิลด์ใน Schema ของคุณ
+                    });
+                } else if ('Watching_Behind') {
+                    // อ่าน/ดู ยังไม่ถึงตอนล่าสุด (status ต้องเป็น Reading/Watching และ isRead เป็น false หรือ null)
+                    statusConditions.push({ 
+                        status: 'Watching', 
+                        $or: [{ isRead: false }, { isRead: null }, { isRead: { $exists: false } }] 
+                    });
+                } else {
+                    // สถานะปกติอื่นๆ เช่น Completed, PlanToRead ฯลฯ
+                    normalStatuses.push(status);
+                }
+            });
+
+            // หากมีการเลือกสถานะปกติ ให้นำมารวมด้วย $in
+            if (normalStatuses.length > 0) {
+                statusConditions.push({ status: { $in: normalStatuses } });
+            }
+
+            // รวมเงื่อนไขทั้งหมดเข้า finalQueryObject ด้วย $or
+            if (statusConditions.length > 0) {
+                finalQueryObject.$or = statusConditions;
+            }
         }
 
         // Finding resource

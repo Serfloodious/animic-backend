@@ -75,8 +75,37 @@ exports.getComics = async (req, res, next) => {
         }
 
         if (req.query.status && req.query.status.trim() !== '') {
-            const statusArray = req.query.status.split(',');
-            finalQueryObject.status = { $in: statusArray };
+            const rawStatusArray = req.query.status.split(',');
+    
+            const statusConditions = [];
+            const normalStatuses = [];
+
+            rawStatusArray.forEach(status => {
+                if (status === 'Reading_UpToDate') {
+                    statusConditions.push({ 
+                        status: 'Reading', 
+                        isRead: true // หรือ isUpToDate: true ตามชื่อฟิลด์ใน Schema ของคุณ
+                    });
+                } else if (status === 'Reading_Behind') {
+                    statusConditions.push({ 
+                        status: 'Reading', 
+                        $or: [{ isRead: false }, { isRead: null }, { isRead: { $exists: false } }] 
+                    });
+                } else {
+                    // สถานะปกติอื่นๆ
+                    normalStatuses.push(status);
+                }
+            });
+
+            // หากมีการเลือกสถานะปกติ ให้นำมารวมด้วย $in
+            if (normalStatuses.length > 0) {
+                statusConditions.push({ status: { $in: normalStatuses } });
+            }
+
+            // รวมเงื่อนไขทั้งหมดเข้า finalQueryObject ด้วย $or
+            if (statusConditions.length > 0) {
+                finalQueryObject.$or = statusConditions;
+            }
         }
 
         // Finding resource
